@@ -1,17 +1,24 @@
+sudo: required
+
 services:
   - docker
-before_install:
 
-  - docker-compose --version
-# Setup your application stack. You may need to tweak these commands if you
-  # doing out-of-the-ordinary docker-compose builds.
-  #- docker-compose pull
-  - docker-compose docker-compose -f dev-docker-compose.yml up --build
-# You will want this for logging. If one of your containers does not build for
-  # whatever reason it's best to report that now before your tests start
-  # otherwise it can be really tricky to debug why tests are failing sometimes.
-#  - docker ps
-# This is just our script to setup all the database tables and other fixtures
-  # we need. You should remove this if it's not necessary or you have other
-  # scripts handling this.
-  #- docker/web/provision.sh
+env:
+  DOCKER_COMPOSE_VERSION: 1.23.2
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+
+before_script:
+  - docker-compose up -d --build
+
+script:
+  - docker-compose exec users python manage.py test
+  - docker-compose exec users black project
+  - docker-compose exec users flake8 project
+
+after_script:
+  - docker-compose down
