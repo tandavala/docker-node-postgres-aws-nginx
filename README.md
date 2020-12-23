@@ -1,2 +1,2 @@
-# docker-node-postgres-aws-nginx
-docker-node-postgres-aws-nginx
+# node-docker-posgres-aws
+node-docker-posgres-aws
