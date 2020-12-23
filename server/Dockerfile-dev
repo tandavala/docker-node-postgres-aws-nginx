@@ -1,0 +1,22 @@
+FROM node
+
+RUN mkdir -p /app/server/node_modules && \
+    chown -R node:node /app/server
+
+WORKDIR /app/server
+
+COPY package*.json ./app/server/
+
+RUN npm install -g nodemon
+
+RUN npm install
+
+COPY . ./app/server/
+
+USER node
+
+EXPOSE 4000
+
+#ENTRYPOINT ["./init.sh]
+
+CMD npm run server

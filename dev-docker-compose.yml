@@ -1,0 +1,50 @@
+version: "3"
+
+services: 
+  server:
+    container_name: server
+    restart: always
+    build: 
+      context: ./server
+      dockerfile: Dockerfile-dev
+    ports: 
+      - "4000:4000"
+    networks: 
+      - app-network
+
+    environment: 
+      - MONGO_URI=mongodb://db:27017/db
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASS=1cristo2bom3
+      - POSTGRES_DATABASE=njila
+      - JWT_SECRET=secretsecret
+      - JWT_EXPIRY=30d
+      - DEBUG=worker:*
+      - MORGAN=combined
+      - NODE_ENV=development
+    volumes: 
+      - ./server:/app/server
+    links: 
+      - mongo
+  client:
+    container_name: client
+    restart: always
+    build: 
+      context: ./client
+      dockerfile: Dockerfile-dev
+    volumes: 
+      - ./client:/app/client
+    ports: 
+      - "3000:3000"
+    networks: 
+      - app-network
+  mongo:
+    hostname: mongo
+    image: mongo
+    restart: always
+    ports: 
+      - "27017:27017"
+
+networks:
+  app-network:
+    driver: bridge

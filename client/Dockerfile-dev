@@ -1,0 +1,20 @@
+FROM node
+
+RUN mkdir -p /app/client/node_modules && \
+    chown -R node:node /app/client
+
+WORKDIR /app/client
+
+COPY package*.json ./app/client/
+
+RUN npm install
+
+COPY . ./app/client/
+
+COPY --chown=node:node . ./app/client/
+
+USER node
+
+EXPOSE 3000
+
+CMD ["npm", "start"]
